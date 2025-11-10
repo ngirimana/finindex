@@ -164,12 +164,10 @@ export const processShapefileData = async (shapefilePath: string): Promise<Proce
       features: features
     };
   } catch (error) {
-    console.error('❌ Error loading GeoJSON:', error);
-    console.log('⚠️ Using minimal fallback map data (API should provide real data)');
-    // Return minimal fallback only when absolutely necessary
+    console.log(error)
     return {
       type: 'FeatureCollection',
-      features: [] // Empty features - let the API provide real data
+      features: [] 
     };
   }
 };

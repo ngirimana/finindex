@@ -23,14 +23,12 @@ export function SiteNavbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#71391C] text-white">
       <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 h-14">
-        {/* Left: Logo / Brand */}
         <Link to="/" className="flex items-center gap-2">
           <span className="text-[15px] sm:text-[16px] font-semibold tracking-tight">
             African Fintech Index
           </span>
         </Link>
 
-        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-6">
           {NAV.map((item) => (
             <Link
@@ -47,7 +45,6 @@ export function SiteNavbar() {
           ))}
         </div>
 
-        {/* Mobile toggle */}
         <button
           onClick={() => setOpen(!open)}
           className="md:hidden p-2 rounded hover:bg-[#8b4d2e]/30 transition"
@@ -56,7 +53,6 @@ export function SiteNavbar() {
         </button>
       </nav>
 
-      {/* Mobile Dropdown */}
       {open && (
         <div className="md:hidden bg-[#71391C] border-t border-[#8b4d2e]">
           <div className="flex flex-col px-6 py-3 space-y-2">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Newspaper, ExternalLink, Calendar, RefreshCw } from "lucide-react";
-import type { NewsArticle } from "../types";
+import type { NewsArticle } from "../../types";
 import { useGetNewsQuery } from "~/services/finApi";
 
 export const FinanceNews: React.FC = () => {

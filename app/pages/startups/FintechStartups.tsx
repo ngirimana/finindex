@@ -1,14 +1,14 @@
 import React, { useMemo, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { Search } from "lucide-react";
-import { useCoffeeBrandTheme } from "./brandStyles";
-import HeaderActions from "./HeaderActions";
-import FiltersBar from "./FiltersBar";
-import AddStartupForm from "./AddStartupForm";
-import VerificationPanel from "./VerificationPanel";
-import StartupCard from "./StartupCard";
-import UploadGuideModal from "./UploadGuideModal";
-import { parseSectors } from "./utils";
+import { useCoffeeBrandTheme } from "../../components/Finitech/brandStyles";
+import HeaderActions from "../../components/Finitech/HeaderActions";
+import FiltersBar from "../../components/Finitech/FiltersBar";
+import AddStartupForm from "../../components/Finitech/AddStartupForm";
+import VerificationPanel from "../../components/Finitech/VerificationPanel";
+import StartupCard from "../../components/Finitech/StartupCard";
+import UploadGuideModal from "../../components/Finitech/UploadGuideModal";
+import { parseSectors } from "../../components/Finitech/utils";
 import type { FintechStartup } from "~/services/finApi";
 
 import {
@@ -167,11 +167,11 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
     if (!file) return;
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (!["xlsx", "xls", "csv"].includes(ext || "")) {
-      setUploadStatus("❌ Invalid file format!");
+      setUploadStatus("Invalid file format!");
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setUploadStatus("❌ File too large! Max 10MB.");
+      setUploadStatus("File too large! Max 10MB.");
       return;
     }
 
@@ -200,18 +200,18 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
             )
         );
         if (missing.length) {
-          setUploadStatus(`❌ Missing required fields: ${missing.join(", ")}`);
+          setUploadStatus(`Missing required fields: ${missing.join(", ")}`);
           return;
         }
 
         setUploadStatus("Uploading...");
         await (bulkUploadStartups as any)({ data: json }).unwrap();
-        setUploadStatus("✅ Upload complete");
+        setUploadStatus("Upload complete");
         refetchStartups();
         if (currentUser?.role === "admin") refetchPending();
       } catch (err: any) {
         setUploadStatus(
-          `❌ Bulk upload failed: ${err?.data?.error || "Unknown error"}`
+          `Bulk upload failed: ${err?.data?.error || "Unknown error"}`
         );
       }
     };

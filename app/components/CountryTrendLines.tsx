@@ -34,14 +34,18 @@ type Metric =
   | "population"
   | "gdp";
 
-/* -------------------- Visual constants -------------------- */
+/* 
+  -------------------- Visual constants --------------------
+ */
 const ACTIVE_WIDTH = 3;
 const DIM_WIDTH = 2;
 const DIM_OPACITY = 0.35;
 const DIM_DASH = "2 4";
 const DIM_DOT_R = 2;
 
-/* Bright, white-bg friendly palettes for score buckets */
+/* 
+  Bright, white-bg friendly palettes for score buckets 
+*/
 const GREEN_PALETTE = ["#006d2c", "#2ca25f", "#41ab5d", "#66c2a4", "#a1d99b"]; // >80
 const BLUE_PALETTE = ["#08519c", "#2171b5", "#3182bd", "#6baed6", "#9ecae1"]; // >60
 const YELL_PALETTE = ["#b58900", "#cfa90a", "#d8b365", "#f6e8c3", "#fee08b"]; // >50
@@ -95,7 +99,9 @@ function latestValue(points: CountryYearRow[], metric: Metric): number | null {
   return null;
 }
 
-/* -------------------- Component -------------------- */
+/* 
+-------------------- Component -------------------- 
+*/
 export default function CountryTrendLine({
   rows,
   countries,
@@ -108,7 +114,9 @@ export default function CountryTrendLine({
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
-  // keep explicit 1e-10; null truly tiny noise
+  /*
+   keep explicit 1e-10; null truly tiny noise
+  */
   const cleaned = useMemo(
     () =>
       rows.map((r) => {

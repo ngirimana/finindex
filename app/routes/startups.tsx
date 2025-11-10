@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import FiniTechStartups from "~/components/Finitech/FintechStartups";
+import FiniTechStartups from "~/pages/startups/FintechStartups";
 import { User } from "~/types";
 
 export default function About() {

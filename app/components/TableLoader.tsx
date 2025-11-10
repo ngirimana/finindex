@@ -1,4 +1,3 @@
-// src/components/TableLoader.tsx
 import React from "react";
 
 type TableLoaderProps = {
@@ -17,7 +16,6 @@ export const TableLoader: React.FC<TableLoaderProps> = ({
       className="bg-white rounded-2xl shadow-sm border border-gray-200 w-full overflow-hidden"
       style={{ minHeight: height }}
     >
-      {/* header */}
       <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
         <div className="h-5 w-48 bg-gray-200 rounded animate-pulse" />
         <div className="flex items-center gap-3">
@@ -26,7 +24,6 @@ export const TableLoader: React.FC<TableLoaderProps> = ({
         </div>
       </div>
 
-      {/* column titles */}
       <div
         className="px-6 py-3 border-b border-gray-100 grid"
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
@@ -39,7 +36,6 @@ export const TableLoader: React.FC<TableLoaderProps> = ({
         ))}
       </div>
 
-      {/* rows */}
       <div className="divide-y divide-gray-100">
         {Array.from({ length: rows }).map((_, rIdx) => (
           <div
