@@ -1,14 +1,14 @@
 import React, { useMemo, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { Search } from "lucide-react";
-import { useCoffeeBrandTheme } from "../../components/Finitech/brandStyles";
-import HeaderActions from "../../components/Finitech/HeaderActions";
-import FiltersBar from "../../components/Finitech/FiltersBar";
-import AddStartupForm from "../../components/Finitech/AddStartupForm";
-import VerificationPanel from "../../components/Finitech/VerificationPanel";
-import StartupCard from "../../components/Finitech/StartupCard";
-import UploadGuideModal from "../../components/Finitech/UploadGuideModal";
-import { parseSectors } from "../../components/Finitech/utils";
+import { useCoffeeBrandTheme } from "~/components/Finitech/brandStyles";
+import HeaderActions from "~/components/Finitech/HeaderActions";
+import FiltersBar from "~/components/Finitech/FiltersBar";
+import AddStartupForm from "~/components/Finitech/AddStartupForm";
+import VerificationPanel from "~/components/Finitech/VerificationPanel";
+import StartupCard from "~/components/Finitech/StartupCard";
+import UploadGuideModal from "~/components/Finitech/UploadGuideModal";
+import { parseSectors } from "~/components/Finitech/utils";
 import type { FintechStartup } from "~/services/finApi";
 
 import {
@@ -20,6 +20,7 @@ import {
   useVerifyStartupMutation,
   useBulkVerifyStartupsMutation,
 } from "~/services/finApi";
+import { StartupGridSkeleton } from "~/components/Finitech/StartupCardSkeleton";
 
 type Props = { currentUser: any; selectedYear?: number };
 
@@ -357,10 +358,11 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
 
       {/* Grid / List */}
       {isLoading ? (
-        <div className="text-center py-8">
-          <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm text-gray-600">Loading startups...</p>
-        </div>
+        // <div className="text-center py-8">
+        //   <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        //   <p className="text-sm text-gray-600">Loading startups...</p>
+        // </div>
+        <StartupGridSkeleton count={6} />
       ) : isError ? (
         <div className="text-red-600 text-sm p-4 text-center">
           {(error as any)?.data?.error || "Failed to load startups"}

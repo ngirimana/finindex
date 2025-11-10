@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import type { AuthMode } from "../../components/Auth/utils/types";
-import { Tabs } from "../../components/Auth/Tabs";
-import { LoginForm } from "../../components/Auth/LoginForm";
-import { RegisterForm } from "../../components/Auth/RegisterForm";
+import type { AuthMode } from "~/components/Auth/utils/types";
+import { Tabs } from "~/components/Auth/Tabs";
+import { LoginForm } from "~/components/Auth/LoginForm";
+import { RegisterForm } from "~/components/Auth/RegisterForm";
 
 export default function AuthPage() {
   const navigate = useNavigate();
