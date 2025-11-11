@@ -9,7 +9,7 @@ import VerificationPanel from "~/components/Finitech/VerificationPanel";
 import StartupCard from "~/components/Finitech/StartupCard";
 import UploadGuideModal from "~/components/Finitech/UploadGuideModal";
 import { parseSectors } from "~/components/Finitech/utils";
-import { useBrandedModal } from "~/components/Finitech/BrandedModal";
+import { useBrandedModal } from "~/components/BrandedModal";
 import type { FintechStartup } from "~/services/finApi";
 
 import {

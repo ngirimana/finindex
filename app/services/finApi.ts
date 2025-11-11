@@ -43,11 +43,11 @@ type RegisterResponse = { message: string } | { success: boolean; message?: stri
 
 /* ----------------------- Startups Types (from component) ----------------------- */
 export type FintechStartup = {
-  _id?: string;          // server id (used in pending/verify/delete)
-  id?: string;           // client temp id for UI
+  _id?: string;
+  id?: string;
   name: string;
   country: string;
-  sector: string | string[]; // component accepts string or array
+  sector: string | string[];
   foundedYear: number;
   description?: string;
   website?: string | null;
@@ -56,7 +56,7 @@ export type FintechStartup = {
   verificationStatus?: "pending" | "approved" | "rejected";
 };
 
-type CreateStartupRequest = FintechStartup; // your component posts the full object
+type CreateStartupRequest = FintechStartup;
 type CreateStartupResponse = FintechStartup;
 
 type BulkUploadRequest = { data: any[] };
@@ -75,6 +75,35 @@ type BulkVerifyRequest = {
   adminNotes?: string;
 };
 type BulkVerifyResponse = { message?: string };
+
+/* ----------------------- Users (admin) types ----------------------- */
+export type AppUser = {
+  _id: string;
+  name?: string;
+  email: string;
+  role: "viewer" | "editor" | "admin";
+  isVerified: boolean;
+  country?: string;
+  organization?: string;
+  jobTitle?: string;
+  phoneNumber?: string;
+  createdAt?: string;
+  lastLogin?: string;
+};
+
+type CreateUserRequest = {
+  name: string;
+  email: string;
+  password: string;
+  role: "viewer" | "editor" | "admin";
+  country?: string;
+  organization?: string;
+  jobTitle?: string;
+  phoneNumber?: string;
+};
+type CreateUserResponse = AppUser;
+type UpdateUserRequest = Partial<Pick<AppUser, "name" | "role" | "isVerified">>;
+type UpdateUserResponse = AppUser;
 
 /* ----------------------- Config & Helpers ----------------------- */
 const BASE_URL =
@@ -123,6 +152,9 @@ export const finApi = createApi({
     "User",
     "Startups",
     "PendingStartups",
+    // NEW:
+    "Users",
+    "UnverifiedUsers",
   ] as const,
   refetchOnFocus: true,
   refetchOnReconnect: true,
@@ -156,9 +188,7 @@ export const finApi = createApi({
       providesTags: (_res, _err, year) => [{ type: "StartupCounts" as const, id: `YEAR-${year}` }],
     }),
 
-    /* ---------- STARTUPS (from your component) ---------- */
-
-    // GET /startups  (optionally allow server-side filters in future)
+    /* ---------- STARTUPS ---------- */
     getStartups: build.query<
       FintechStartup[],
       { year?: number; country?: string; sector?: string; search?: string } | void
@@ -181,10 +211,8 @@ export const finApi = createApi({
           : [{ type: "Startups" as const, id: "LIST" }],
     }),
 
-    // GET /startups/pending  (admin)
     getPendingStartups: build.query<FintechStartup[], void>({
       query: () => "startups/pending",
-      // component expects { startups: [...] }
       transformResponse: (res: any) => (Array.isArray(res?.startups) ? res.startups : []),
       providesTags: (result) =>
         result
@@ -195,13 +223,11 @@ export const finApi = createApi({
           : [{ type: "PendingStartups" as const, id: "LIST" }],
     }),
 
-    // POST /startups  (create)
     createStartup: build.mutation<CreateStartupResponse, CreateStartupRequest>({
       query: (body) => ({ url: "startups", method: "POST", body }),
       invalidatesTags: [{ type: "Startups", id: "LIST" }],
     }),
 
-    // DELETE /startups/:id  (admin/editor)
     deleteStartup: build.mutation<{ deletedStartup: FintechStartup }, string>({
       query: (startupId) => ({ url: `startups/${startupId}`, method: "DELETE" }),
       invalidatesTags: [
@@ -210,13 +236,11 @@ export const finApi = createApi({
       ],
     }),
 
-    // POST /startups/bulk  (bulk upload)
     bulkUploadStartups: build.mutation<BulkUploadResponse, BulkUploadRequest>({
       query: (body) => ({ url: "startups/bulk", method: "POST", body }),
       invalidatesTags: [{ type: "Startups", id: "LIST" }],
     }),
 
-    // PATCH /startups/:id/verify  (admin approve/reject)
     verifyStartup: build.mutation<VerifyStartupResponse, VerifyStartupRequest>({
       query: ({ id, ...body }) => ({
         url: `startups/${id}/verify`,
@@ -229,7 +253,6 @@ export const finApi = createApi({
       ],
     }),
 
-    // PATCH /startups/bulk-verify  (admin bulk approve/reject)
     bulkVerifyStartups: build.mutation<BulkVerifyResponse, BulkVerifyRequest>({
       query: (body) => ({
         url: "startups/bulk-verify",
@@ -265,6 +288,91 @@ export const finApi = createApi({
       query: () => "auth/me",
       providesTags: [{ type: "User", id: "ME" }],
     }),
+
+    /* ---------- USERS (admin) ---------- */
+    getUsers: build.query<AppUser[], void>({
+      query: () => "users",
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map((u) => ({ type: "Users" as const, id: u._id })),
+              { type: "Users" as const, id: "LIST" },
+            ]
+          : [{ type: "Users" as const, id: "LIST" }],
+    }),
+
+    getUnverifiedUsers: build.query<AppUser[], void>({
+      query: () => "users/unverified",
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map((u) => ({ type: "UnverifiedUsers" as const, id: u._id })),
+              { type: "UnverifiedUsers" as const, id: "LIST" },
+            ]
+          : [{ type: "UnverifiedUsers" as const, id: "LIST" }],
+    }),
+
+    createUser: build.mutation<CreateUserResponse, CreateUserRequest>({
+      query: (body) => ({ url: "users", method: "POST", body }),
+      invalidatesTags: [{ type: "Users", id: "LIST" }, { type: "UnverifiedUsers", id: "LIST" }],
+    }),
+
+    verifyUser: build.mutation<AppUser, { id: string; isVerified: boolean }>({
+      query: ({ id, isVerified }) => ({
+        url: `users/${id}/verify`,
+        method: "PATCH",
+      }),
+      invalidatesTags: [
+        { type: "Users", id: "LIST" },
+        { type: "UnverifiedUsers", id: "LIST" },
+      ],
+    }),
+
+    updateUser: build.mutation<UpdateUserResponse, { id: string; data: UpdateUserRequest }>({
+      query: ({ id, data }) => ({
+        url: `users/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: [{ type: "Users", id: "LIST" }, { type: "User", id: "ME" }],
+    }),
+
+    deleteUser: build.mutation<{ success?: boolean }, string>({
+      query: (id) => ({ url: `users/${id}`, method: "DELETE" }),
+      invalidatesTags: [{ type: "Users", id: "LIST" }, { type: "UnverifiedUsers", id: "LIST" }],
+    }),
+   
+
+/* ---------- COUNTRY DATA (Deletes) ---------- */
+deleteCountryDataByYear: build.mutation<{ deletedCount: number }, number>({
+  query: (year) => ({
+    url: `country-data/delete-by-year/${year}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: [
+    { type: "CountryData", id: "LIST" },
+    // helps knock out cached year queries
+    { type: "CountryData", id: (year) => `YEAR-${year}` } as any,
+  ],
+}),
+
+deleteCountryDataByCountry: build.mutation<{ deletedCount: number }, string>({
+  query: (country) => ({
+    url: `country-data/delete-by-country/${encodeURIComponent(country)}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: [{ type: "CountryData", id: "LIST" }],
+}),
+
+deleteCountryDataSelective: build.mutation<{ deletedCount: number }, { ids: string[] }>({
+  query: (body) => ({
+    url: "country-data/delete-selective",
+    method: "DELETE",
+    body,
+  }),
+  invalidatesTags: [{ type: "CountryData", id: "LIST" }],
+}),
+
   }),
 });
 
@@ -292,4 +400,15 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useMeQuery,
+
+  // Users (admin)
+  useGetUsersQuery,
+  useGetUnverifiedUsersQuery,
+  useCreateUserMutation,
+  useVerifyUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+  useDeleteCountryDataByYearMutation,
+  useDeleteCountryDataByCountryMutation,
+  useDeleteCountryDataSelectiveMutation,
 } = finApi;

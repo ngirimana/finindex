@@ -148,7 +148,7 @@ export const FinanceNews: React.FC = () => {
       {/* News Content */}
       <div className="flex-1 px-2 sm:px-3 md:px-4 lg:px-6 overflow-y-auto min-h-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 pb-2 sm:pb-3 md:pb-4">
-          {Array.from({ length: 6 }, (_, index) => {
+          {Array.from({ length: articles.length }, (_, index) => {
             const article: NewsArticle | undefined = articles[index];
             if (!article) {
               return (

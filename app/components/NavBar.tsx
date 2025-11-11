@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { href, Link, useLocation } from "react-router-dom";
 import { Menu, User, X } from "lucide-react";
-import { AuthModal } from "./AuthModal";
 import type { User as U } from "../types";
 import { Label } from "recharts";
 
@@ -11,6 +10,8 @@ const NAV = [
   { label: "Financial News", href: "/news" },
   { label: "Startups", href: "/startups" },
   { label: "Sign In", href: "/login" },
+  { label: "User Management", href: "/user-management" },
+  { label: "Data Management", href: "/data-management" },
 ];
 
 export function SiteNavbar() {

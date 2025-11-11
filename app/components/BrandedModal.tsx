@@ -9,22 +9,22 @@ const toneStyles: Record<
   { ring: string; iconWrap: string; iconColor: string; title: string }
 > = {
   brand: {
-    ring: "ring-brand-200",
-    iconWrap: "bg-brand-50",
-    iconColor: "text-brand-600",
-    title: "text-gray-900",
+    ring: "ring-[#E5B97C]/50",
+    iconWrap: "bg-[#E5B97C]/20",
+    iconColor: "text-[#6B3A1E]",
+    title: "text-[#6B3A1E]",
   },
   danger: {
     ring: "ring-red-200",
     iconWrap: "bg-red-50",
     iconColor: "text-red-600",
-    title: "text-gray-900",
+    title: "text-[#6B3A1E]",
   },
   neutral: {
     ring: "ring-gray-200",
     iconWrap: "bg-gray-50",
     iconColor: "text-gray-600",
-    title: "text-gray-900",
+    title: "text-[#6B3A1E]",
   },
 };
 
@@ -35,7 +35,7 @@ type ModalData = {
   tone: Tone;
   confirmText?: string;
   cancelText?: string;
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
 };
 
 function BrandedModalUI({
@@ -58,23 +58,27 @@ function BrandedModalUI({
         aria-hidden="true"
         onClick={onClose}
       />
+
       {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative w-full sm:w-[520px] mx-auto rounded-xl bg-white shadow-xl ring-1 ${s.ring} p-5 sm:p-6`}
+        className={`relative w-full sm:w-[520px] mx-auto rounded-2xl bg-white shadow-2xl ring-1 ${s.ring} p-6 sm:p-8`}
       >
+        {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-3 right-3 p-1 rounded-md hover:bg-gray-100 text-gray-500"
+          className="absolute top-4 right-4 p-2 rounded-md hover:bg-[#F8F6F3] text-[#6B3A1E]/70 hover:text-[#6B3A1E] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-start gap-3 sm:gap-4">
+        {/* Content */}
+        <div className="flex items-start gap-4">
           <div
-            className={`w-10 h-10 sm:w-12 sm:h-12 ${s.iconWrap} rounded-full flex items-center justify-center shrink-0`}
+            className={`w-12 h-12 ${s.iconWrap} rounded-full flex items-center justify-center shrink-0`}
           >
             {data.tone === "danger" ? (
               <AlertTriangle className={`w-6 h-6 ${s.iconColor}`} />
@@ -83,34 +87,39 @@ function BrandedModalUI({
             )}
           </div>
           <div className="min-w-0">
-            <h3 className={`text-base sm:text-lg font-semibold ${s.title}`}>
-              {data.title}
-            </h3>
-            <div className="mt-1 sm:mt-2 text-sm sm:text-[15px] text-gray-700">
+            <h3 className={`text-lg font-semibold ${s.title}`}>{data.title}</h3>
+            <div className="mt-2 text-[15px] text-[#6B3A1E]/80 leading-relaxed">
               {data.message}
             </div>
           </div>
         </div>
 
-        <div className="mt-5 sm:mt-6 flex items-center justify-end gap-2">
+        {/* Buttons */}
+        <div className="mt-6 sm:mt-8 flex items-center justify-end gap-3">
           {data.mode === "confirm" && (
             <button
+              type="button"
               onClick={onClose}
-              className="btn-outline px-4 py-2 rounded-lg text-sm font-medium"
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#D9CBBE] text-[#6B3A1E] bg-[#F8F6F3] hover:bg-[#FCEFD6] transition-all duration-200"
             >
               {data.cancelText ?? "Cancel"}
             </button>
           )}
           <button
-            onClick={() => {
-              data.onConfirm?.();
-              onClose();
+            type="button"
+            onClick={async () => {
+              try {
+                await data.onConfirm?.();
+              } finally {
+                onClose();
+              }
             }}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm font-medium ${
-              data.tone === "danger"
-                ? "bg-red-600 text-white hover:bg-red-700"
-                : "btn-primary"
-            }`}
+            className={`px-6 py-2.5 rounded-lg text-sm font-semibold shadow-sm transition-all duration-200
+              ${
+                data.tone === "danger"
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-[#6B3A1E] text-[#FCEFD6] hover:bg-[#8B4A2A]"
+              }`}
           >
             {data.confirmText ?? (data.mode === "confirm" ? "Confirm" : "OK")}
           </button>
@@ -120,14 +129,14 @@ function BrandedModalUI({
   );
 }
 
-/** Hook that returns a modal element and helpers to open it */
+/** Hook for using modal */
 export function useBrandedModal() {
   const [open, setOpen] = React.useState(false);
-  const dataRef = React.useRef<ModalData | null>(null);
+  const [data, setData] = React.useState<ModalData | null>(null);
 
   const openAlert = React.useCallback(
     (title: string, message: React.ReactNode, tone: Tone = "brand") => {
-      dataRef.current = { title, message, mode: "alert", tone };
+      setData({ title, message, mode: "alert", tone });
       setOpen(true);
     },
     []
@@ -140,9 +149,9 @@ export function useBrandedModal() {
       tone?: Tone;
       confirmText?: string;
       cancelText?: string;
-      onConfirm: () => void;
+      onConfirm: () => void | Promise<void>;
     }) => {
-      dataRef.current = {
+      setData({
         title: opts.title,
         message: opts.message,
         mode: "confirm",
@@ -150,7 +159,7 @@ export function useBrandedModal() {
         confirmText: opts.confirmText,
         cancelText: opts.cancelText,
         onConfirm: opts.onConfirm,
-      };
+      });
       setOpen(true);
     },
     []
@@ -158,9 +167,7 @@ export function useBrandedModal() {
 
   const close = React.useCallback(() => setOpen(false), []);
 
-  const Modal = (
-    <BrandedModalUI open={open} onClose={close} data={dataRef.current} />
-  );
+  const Modal = <BrandedModalUI open={open} onClose={close} data={data} />;
 
   return { Modal, openAlert, openConfirm, close };
 }
