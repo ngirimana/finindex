@@ -9,6 +9,7 @@ import VerificationPanel from "~/components/Finitech/VerificationPanel";
 import StartupCard from "~/components/Finitech/StartupCard";
 import UploadGuideModal from "~/components/Finitech/UploadGuideModal";
 import { parseSectors } from "~/components/Finitech/utils";
+import { useBrandedModal } from "~/components/Finitech/BrandedModal";
 import type { FintechStartup } from "~/services/finApi";
 
 import {
@@ -26,8 +27,7 @@ type Props = { currentUser: any; selectedYear?: number };
 
 const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
   useCoffeeBrandTheme();
-
-  // UI state
+  const { Modal, openAlert, openConfirm } = useBrandedModal();
   const [uploadStatus, setUploadStatus] = useState("");
   const [showUploadGuide, setShowUploadGuide] = useState(false);
   const [notice, setNotice] = useState<{
@@ -71,7 +71,6 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
   const [verifyStartup] = useVerifyStartupMutation();
   const [bulkVerifyStartups] = useBulkVerifyStartupsMutation();
 
-  // Derived
   const allSectors = useMemo(() => {
     const set = new Set<string>();
     startups.forEach((s: any) =>
@@ -111,7 +110,11 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
   const handleAddStartup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
-      alert("Please sign in to add startups");
+      openAlert(
+        "Sign in required",
+        "Please sign in to add startups.",
+        "neutral"
+      );
       return;
     }
 
@@ -143,24 +146,37 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
     }
   };
 
-  const handleDeleteStartup = async (startupId: string) => {
+  const handleDeleteStartup = (startupId: string) => {
     if (!currentUser?.role || !["admin", "editor"].includes(currentUser.role)) {
-      alert("Access denied.");
+      openAlert(
+        "Access denied",
+        "You don't have permission to delete startups.",
+        "danger"
+      );
       return;
     }
-    if (!confirm("Delete this startup permanently?")) return;
-    try {
-      await deleteStartup(startupId as any).unwrap();
-      refetchStartups();
-      setNotice({ type: "success", message: "Startup deleted." });
-    } catch (err: any) {
-      setNotice({
-        type: "error",
-        message: err?.data?.error || "Failed to delete",
-      });
-    } finally {
-      setTimeout(() => setNotice(null), 4000);
-    }
+    openConfirm({
+      title: "Delete startup?",
+      tone: "danger",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      message:
+        "This action cannot be undone. Are you sure you want to permanently delete this startup?",
+      onConfirm: async () => {
+        try {
+          await deleteStartup(startupId as any).unwrap();
+          refetchStartups();
+          setNotice({ type: "success", message: "Startup deleted." });
+        } catch (err: any) {
+          setNotice({
+            type: "error",
+            message: err?.data?.error || "Failed to delete",
+          });
+        } finally {
+          setTimeout(() => setNotice(null), 4000);
+        }
+      },
+    });
   };
 
   const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,7 +222,8 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
         }
 
         setUploadStatus("Uploading...");
-        await (bulkUploadStartups as any)({ data: json }).unwrap();
+
+        await (bulkUploadStartups as any)({ startups: json }).unwrap();
         setUploadStatus("Upload complete");
         refetchStartups();
         if (currentUser?.role === "admin") refetchPending();
@@ -219,65 +236,88 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
     reader.readAsArrayBuffer(file);
   };
 
-  const handleVerifyStartup = async (
+  const handleVerifyStartup = (
     startupId: string,
     status: "approved" | "rejected",
     notes?: string
   ) => {
     if (currentUser?.role !== "admin") return;
-    const action = status === "approved" ? "approve" : "reject";
-    if (!confirm(`Are you sure you want to ${action} this startup?`)) return;
-    try {
-      await (verifyStartup as any)({
-        startupId,
-        verificationStatus: status,
-        adminNotes: notes || "",
-      }).unwrap();
-      refetchPending();
-      refetchStartups();
-      setNotice({ type: "success", message: `Startup ${status}.` });
-    } catch (err: any) {
-      setNotice({
-        type: "error",
-        message: err?.data?.error || "Failed to verify",
-      });
-    } finally {
-      setTimeout(() => setNotice(null), 4000);
-    }
+    const action = status === "approved" ? "Approve" : "Reject";
+    openConfirm({
+      title: `${action} this startup?`,
+      tone: status === "approved" ? "brand" : "danger",
+      confirmText: action,
+      cancelText: "Cancel",
+      message:
+        status === "approved"
+          ? "Confirm approval. The startup will be visible to all users."
+          : "Confirm rejection. The startup will be marked as rejected.",
+      onConfirm: async () => {
+        try {
+          await (verifyStartup as any)({
+            startupId,
+            verificationStatus: status,
+            adminNotes: notes || "",
+          }).unwrap();
+          refetchPending();
+          refetchStartups();
+          setNotice({ type: "success", message: `Startup ${status}.` });
+        } catch (err: any) {
+          setNotice({
+            type: "error",
+            message: err?.data?.error || "Failed to verify",
+          });
+        } finally {
+          setTimeout(() => setNotice(null), 4000);
+        }
+      },
+    });
   };
 
-  const handleVerifyAllStartups = async () => {
+  const handleVerifyAllStartups = () => {
     if (
       currentUser?.role !== "admin" ||
       (pendingStartups as any[]).length === 0
     )
       return;
-    if (
-      !confirm(
-        `Approve all ${(pendingStartups as any[]).length} pending startups?`
-      )
-    )
-      return;
-    try {
-      await (bulkVerifyStartups as any)({
-        startupIds: (pendingStartups as any[]).map((s) => s._id),
-        verificationStatus: "approved",
-        adminNotes: "Bulk approved by admin",
-      }).unwrap();
-      refetchPending();
-      refetchStartups();
-      setNotice({
-        type: "success",
-        message: `All ${(pendingStartups as any[]).length} startups approved.`,
-      });
-    } catch (err: any) {
-      setNotice({
-        type: "error",
-        message: err?.data?.error || "Bulk verify failed",
-      });
-    } finally {
-      setTimeout(() => setNotice(null), 4000);
-    }
+
+    openConfirm({
+      title: "Approve all pending startups?",
+      tone: "brand",
+      confirmText: "Approve all",
+      cancelText: "Cancel",
+      message: (
+        <>
+          This will approve{" "}
+          <span className="font-semibold">
+            {(pendingStartups as any[]).length}
+          </span>{" "}
+          startups at once. You can’t bulk undo this action.
+        </>
+      ),
+      onConfirm: async () => {
+        try {
+          await (bulkVerifyStartups as any)({
+            startupIds: (pendingStartups as any[]).map((s) => s._id),
+            verificationStatus: "approved",
+            adminNotes: "Bulk approved by admin",
+          }).unwrap();
+          refetchPending();
+          refetchStartups();
+          setNotice({
+            type: "success",
+            message: `All ${(pendingStartups as any[]).length} startups approved.`,
+          });
+        } catch (err: any) {
+          setNotice({
+            type: "error",
+            message: err?.data?.error || "Bulk verify failed",
+          });
+        } finally {
+          setTimeout(() => setNotice(null), 4000);
+        }
+      },
+    });
   };
 
   const canAct = Boolean(
@@ -322,7 +362,9 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
       {/* upload status */}
       {uploadStatus && (
         <div
-          className={`mb-3 sm:mb-4 p-2 sm:p-3 rounded text-xs sm:text-sm ${uploadStatus.startsWith("✅") ? "chip-cream" : "chip-sand"}`}
+          className={`mb-3 sm:mb-4 p-2 sm:p-3 rounded text-xs sm:text-sm ${
+            uploadStatus.startsWith("✅") ? "chip-cream" : "chip-sand"
+          }`}
         >
           {uploadStatus}
         </div>
@@ -358,10 +400,6 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
 
       {/* Grid / List */}
       {isLoading ? (
-        // <div className="text-center py-8">
-        //   <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        //   <p className="text-sm text-gray-600">Loading startups...</p>
-        // </div>
         <StartupGridSkeleton count={6} />
       ) : isError ? (
         <div className="text-red-600 text-sm p-4 text-center">
@@ -436,6 +474,9 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
         open={showUploadGuide}
         onClose={() => setShowUploadGuide(false)}
       />
+
+      {/* Central modal instance (from hook) */}
+      {Modal}
     </div>
   );
 };

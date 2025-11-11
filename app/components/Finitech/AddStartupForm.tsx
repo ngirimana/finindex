@@ -39,7 +39,7 @@ const AddStartupForm: React.FC<Props> = ({
           onChange={(e) =>
             setNewStartup({ ...newStartup, name: e.target.value })
           }
-          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="w-full px-3 sm:px-4 py-2 border border-gray-300 text-black rounded-lg text-sm"
           required
         />
         <select
@@ -47,7 +47,7 @@ const AddStartupForm: React.FC<Props> = ({
           onChange={(e) =>
             setNewStartup({ ...newStartup, country: e.target.value })
           }
-          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="w-full px-3 sm:px-4 py-2 border border-gray-300 text-black rounded-lg text-sm"
           required
         >
           <option value="">Select Country</option>
@@ -64,7 +64,7 @@ const AddStartupForm: React.FC<Props> = ({
           onChange={(e) =>
             setNewStartup({ ...newStartup, sector: e.target.value })
           }
-          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="w-full px-3 sm:px-4 py-2 border border-gray-300 text-black rounded-lg text-sm"
           required
         />
         <input
@@ -77,7 +77,7 @@ const AddStartupForm: React.FC<Props> = ({
               foundedYear: parseInt(e.target.value),
             })
           }
-          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="w-full px-3 sm:px-4 py-2 border border-gray-300 text-black rounded-lg text-sm"
           min="1990"
           max={new Date().getFullYear()}
           required
@@ -89,7 +89,7 @@ const AddStartupForm: React.FC<Props> = ({
           onChange={(e) =>
             setNewStartup({ ...newStartup, website: e.target.value })
           }
-          className="sm:col-span-2 w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="sm:col-span-2 w-full px-3 sm:px-4 py-2 border border-gray-300 text-black rounded-lg text-sm"
         />
         <textarea
           placeholder="Description"
@@ -97,14 +97,14 @@ const AddStartupForm: React.FC<Props> = ({
           onChange={(e) =>
             setNewStartup({ ...newStartup, description: e.target.value })
           }
-          className="sm:col-span-2 w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="sm:col-span-2 w-full px-3 sm:px-4 py-2 border border-gray-300 text-black rounded-lg text-sm"
           rows={3}
           required
         />
         <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
           <button
             type="submit"
-            className="px-3 sm:px-4 py-2 btn-primary rounded-lg text-sm font-medium"
+            className="px-3 sm:px-4 py-2 btn-primary rounded-lg text-black text-sm font-medium"
           >
             Add Startup
           </button>

@@ -11,6 +11,16 @@ type Props = {
   onSuccessSwitchToLogin: () => void;
 };
 
+// ✅ helper: normalize CountrySelect value to string
+function toCountryString(input: unknown): string {
+  if (typeof input === "string") return input;
+  if (input && typeof input === "object" && "value" in (input as any)) {
+    const v = (input as any).value;
+    return typeof v === "string" ? v : "";
+  }
+  return "";
+}
+
 export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
   const [form, setForm] = React.useState<AuthForm>({
     email: "",
@@ -37,14 +47,38 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
 
-    if (!form.firstName || !form.lastName || !form.country) {
+    const firstName = form.firstName.trim();
+    const lastName = form.lastName.trim();
+    const country = form.country.trim();
+    const email = form.email.trim();
+
+    // ✅ Check for required fields
+    if (!firstName || !lastName || !country) {
       setMessage({ type: "error", text: "Please fill in all required fields" });
       return;
     }
+
+    if (!form.password || !form.confirmPassword) {
+      setMessage({
+        type: "error",
+        text: "Password and confirmation are required",
+      });
+      return;
+    }
+
+    if (form.password.length < 6) {
+      setMessage({
+        type: "error",
+        text: "Password must be at least 6 characters long",
+      });
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       setMessage({ type: "error", text: "Passwords do not match" });
       return;
     }
+
     if (emailCheck.status !== "valid") {
       setMessage({ type: "error", text: "Please enter a valid email address" });
       return;
@@ -52,20 +86,23 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
 
     try {
       await register({
-        email: form.email,
+        email,
         password: form.password,
-        name: `${form.firstName} ${form.lastName}`,
-        phoneNumber: form.phoneNumber,
-        country: form.country,
-        organization: form.organization,
-        jobTitle: form.jobTitle,
+        name: `${firstName} ${lastName}`,
+        phoneNumber: form.phoneNumber.trim(),
+        country,
+        organization: form.organization.trim(),
+        jobTitle: form.jobTitle.trim(),
         role: registerRole,
         isVerified: false,
       }).unwrap();
+
       setMessage({
         type: "success",
         text: "Registration successful. Wait for admin verification.",
       });
+
+      // Redirect to login
       onSuccessSwitchToLogin();
     } catch (err: any) {
       const text =
@@ -106,7 +143,9 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
 
         <CountrySelect
           value={form.country}
-          onChange={(country) => setForm((f) => ({ ...f, country }))}
+          onChange={(v) =>
+            setForm((f) => ({ ...f, country: toCountryString(v) }))
+          }
         />
       </div>
 
@@ -116,12 +155,14 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
           label="Password"
           value={form.password}
           onChange={(v) => setForm((f) => ({ ...f, password: v }))}
+          required
         />
         <PasswordInput
           label="Confirm Password"
           value={form.confirmPassword}
           onChange={(v) => setForm((f) => ({ ...f, confirmPassword: v }))}
           withIcon={false}
+          required
         />
       </div>
 
@@ -207,7 +248,7 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
         />
       </div>
 
-      {/* Role (viewer/editor) – optional UI */}
+      {/* Role (viewer/editor) */}
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-1">
           Role
@@ -222,9 +263,14 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
         </select>
       </div>
 
+      {/* Success or error message */}
       {message.text && (
         <div
-          className={`text-sm rounded-lg p-3 ${message.type === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}
+          className={`text-sm rounded-lg p-3 ${
+            message.type === "error"
+              ? "bg-red-50 text-red-700"
+              : "bg-green-50 text-green-700"
+          }`}
         >
           {message.text}
         </div>
