@@ -147,8 +147,6 @@ const SIMPLIFIED_AFRICAN_GEOJSON: ProcessedGeoData = {
  */
 export const processShapefileData = async (shapefilePath: string): Promise<ProcessedGeoData> => {
   try {
-    console.log('🔍 Fetching GeoJSON from:', shapefilePath);
-
     const response = await fetch(shapefilePath);
     if (!response.ok) {
       throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
@@ -157,7 +155,7 @@ export const processShapefileData = async (shapefilePath: string): Promise<Proce
     const geojson = await response.json();
 
     const features = filterAfricanCountries(geojson.features);
-    console.log(`✅ Loaded ${features.length} African features`);
+    
 
     return {
       type: 'FeatureCollection',

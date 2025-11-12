@@ -13,6 +13,7 @@ import { SiteNavbar } from "./components/NavBar";
 // 👇 add these
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { Footer } from "./components/Footter";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -39,6 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <SiteNavbar />
         {children}
+        <Footer />
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -17,50 +17,27 @@ export const CountryTable: React.FC<CountryTableProps> = ({
     new Map()
   );
 
-  // Debug: Log props and component state
-  console.log("🔍 Table Component: Props received:", {
-    selectedYear,
-    dataLength: data.length,
-  });
-  console.log(
-    "🔍 Table Component: Current startupCounts size:",
-    startupCounts.size
-  );
-
   // Fetch startup counts by country and year (same as map)
   useEffect(() => {
-    console.log("🔍 Table useEffect: Running with selectedYear:", selectedYear);
     if (!selectedYear) {
-      console.log("🔍 Table useEffect: No selectedYear, skipping fetch");
       return;
     }
 
     const fetchStartupCounts = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL || "/api";
-        console.log(
-          "🔍 Table: Fetching startup counts for year:",
-          selectedYear
-        );
 
         const response = await fetch(
           `${apiUrl}/startups/counts?year=${selectedYear}`
         );
         if (response.ok) {
           const counts = await response.json();
-          console.log("🔍 Table: Raw startup counts response:", counts);
 
           const countsMap = new Map();
           counts.forEach((item: { country: string; count: number }) => {
             countsMap.set(item.country, item.count);
-            console.log(`🔍 Table: Setting ${item.country} = ${item.count}`);
           });
 
-          console.log(
-            "🔍 Table: Final startup counts map:",
-            Object.fromEntries(countsMap)
-          );
-          console.log("🔍 Table: Nigeria count:", countsMap.get("Nigeria"));
           setStartupCounts(countsMap);
         } else {
           console.error(
