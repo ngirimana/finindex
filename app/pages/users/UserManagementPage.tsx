@@ -17,6 +17,7 @@ import AllUsersList from "~/components/Users/AllUsersList";
 import RegisterForm from "~/components/Users/RegisterForm";
 import EditUserModal from "~/components/Users/EditUserModal";
 import ViewProfileModal from "~/components/Users/ViewProfileModal";
+import { AdminGuard } from "~/components/AdminGuard";
 
 const UserManagementPage: React.FC = () => {
   const { Modal, openAlert, openConfirm } = useBrandedModal();
@@ -141,81 +142,83 @@ const UserManagementPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] flex flex-col">
-      {Modal}
+    <AdminGuard>
+      <div className="min-h-screen bg-[#F8F6F3] flex flex-col">
+        {Modal}
 
-      <main className="flex-1 px-1 py-6 sm:py-10 space-y-6 sm:space-y-10 w-full">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#6B3A1E] mb-2">
-              User Management
-            </h1>
-            <p className="text-[#6B3A1E]/70 text-lg">
-              Manage user accounts and permissions
-            </p>
-          </div>
-        </div>
-
-        {/* Unverified */}
-        <section className="bg-white rounded-xl shadow-sm border border-[#D9CBBE] p-6 mb-8 w-full">
-          <UnverifiedUsers
-            loading={loadingUnverified}
-            users={unverifiedUsers}
-            onVerify={confirmVerifyUser}
-          />
-        </section>
-
-        {/* All Users */}
-        <section className="bg-white rounded-xl shadow-sm border border-[#D9CBBE] p-6 mb-6 w-full">
+        <main className="flex-1 px-1 py-6 sm:py-10 space-y-6 sm:space-y-10 w-full">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xl font-bold text-[#6B3A1E] mb-1">
-                All Users
-              </h3>
-              <p className="text-sm text-[#6B3A1E]/70">
-                Manage existing users and register new ones
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#6B3A1E] mb-2">
+                User Management
+              </h1>
+              <p className="text-[#6B3A1E]/70 text-lg">
+                Manage user accounts and permissions
               </p>
-            </div>
-            <div className="bg-[#E5B97C] text-[#6B3A1E] px-3 py-1 rounded-full text-sm font-medium">
-              {allUsers.length} total users
             </div>
           </div>
 
-          <RegisterForm
-            creating={creating}
-            onValidateError={(title, msg) => openAlert(title, msg, "danger")}
-            onSubmit={registerUser}
-          />
+          {/* Unverified */}
+          <section className="bg-white rounded-xl shadow-sm border border-[#D9CBBE] p-6 mb-8 w-full">
+            <UnverifiedUsers
+              loading={loadingUnverified}
+              users={unverifiedUsers}
+              onVerify={confirmVerifyUser}
+            />
+          </section>
 
-          <AllUsersList
-            loading={loadingUsers}
-            users={allUsers}
-            search={userSearch}
-            onSearch={setUserSearch}
-            onView={(u) => setViewingUser(u)}
-            onEdit={startEditUser}
-            onDelete={(u) => confirmDeleteUser(u._id)}
-          />
-        </section>
-      </main>
+          {/* All Users */}
+          <section className="bg-white rounded-xl shadow-sm border border-[#D9CBBE] p-6 mb-6 w-full">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-[#6B3A1E] mb-1">
+                  All Users
+                </h3>
+                <p className="text-sm text-[#6B3A1E]/70">
+                  Manage existing users and register new ones
+                </p>
+              </div>
+              <div className="bg-[#E5B97C] text-[#6B3A1E] px-3 py-1 rounded-full text-sm font-medium">
+                {allUsers.length} total users
+              </div>
+            </div>
 
-      {/* Modals */}
-      <EditUserModal
-        user={editingUser}
-        form={editForm}
-        setForm={setEditForm}
-        onClose={() => setEditingUser(null)}
-        onSave={saveEditUser}
-      />
-      <ViewProfileModal
-        user={viewingUser}
-        onClose={() => setViewingUser(null)}
-        onEdit={(u) => {
-          setViewingUser(null);
-          startEditUser(u);
-        }}
-      />
-    </div>
+            <RegisterForm
+              creating={creating}
+              onValidateError={(title, msg) => openAlert(title, msg, "danger")}
+              onSubmit={registerUser}
+            />
+
+            <AllUsersList
+              loading={loadingUsers}
+              users={allUsers}
+              search={userSearch}
+              onSearch={setUserSearch}
+              onView={(u) => setViewingUser(u)}
+              onEdit={startEditUser}
+              onDelete={(u) => confirmDeleteUser(u._id)}
+            />
+          </section>
+        </main>
+
+        {/* Modals */}
+        <EditUserModal
+          user={editingUser}
+          form={editForm}
+          setForm={setEditForm}
+          onClose={() => setEditingUser(null)}
+          onSave={saveEditUser}
+        />
+        <ViewProfileModal
+          user={viewingUser}
+          onClose={() => setViewingUser(null)}
+          onEdit={(u) => {
+            setViewingUser(null);
+            startEditUser(u);
+          }}
+        />
+      </div>
+    </AdminGuard>
   );
 };
 
