@@ -6,6 +6,7 @@ import {
   useGetAllCountryDataQuery,
   useGetAvailableYearsQuery,
 } from "~/services/finApi";
+import { AdminGuard } from "~/components/AdminGuard";
 
 const DataManagementPage: React.FC = () => {
   // SSR-safe hydration flag
@@ -99,27 +100,29 @@ const DataManagementPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col">
-      <main className="flex-1 px-1 py-6 sm:py-10 space-y-6 sm:space-y-10 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <DataManagement
-            isAuthenticated={true}
-            data={countryData as CountryData[]}
-            years={years}
-            refetchAll={refetchAll}
-            refetchYears={refetchYears}
-          />
+    <AdminGuard>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col">
+        <main className="flex-1 px-1 py-6 sm:py-10 space-y-6 sm:space-y-10 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <DataManagement
+              isAuthenticated={true}
+              data={countryData as CountryData[]}
+              years={years}
+              refetchAll={refetchAll}
+              refetchYears={refetchYears}
+            />
 
-          <FileUpload
-            onDataUpdate={() => {
-              refetchAll();
-              refetchYears();
-            }}
-            currentYear={selectedYear ?? 2024}
-          />
-        </div>
-      </main>
-    </div>
+            <FileUpload
+              onDataUpdate={() => {
+                refetchAll();
+                refetchYears();
+              }}
+              currentYear={selectedYear ?? 2024}
+            />
+          </div>
+        </main>
+      </div>
+    </AdminGuard>
   );
 };
 
