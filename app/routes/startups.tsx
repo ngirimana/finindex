@@ -3,11 +3,13 @@ import FiniTechStartups from "~/pages/startups/FintechStartups";
 import { User } from "~/types";
 
 export default function About() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  useEffect(() => {
-    const storedUser = localStorage.getItem("fintechUser");
-    if (storedUser) setCurrentUser(JSON.parse(storedUser));
-  }, []);
+  const [currentUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem("fintechUser");
+      return stored ? JSON.parse(stored) : null;
+    }
+    return null;
+  });
 
   return <FiniTechStartups currentUser={currentUser} />;
 }

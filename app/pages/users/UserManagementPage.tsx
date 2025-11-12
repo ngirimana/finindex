@@ -183,11 +183,11 @@ const UserManagementPage: React.FC = () => {
               </div>
             </div>
 
-            <RegisterForm
+            {/* <RegisterForm
               creating={creating}
               onValidateError={(title, msg) => openAlert(title, msg, "danger")}
               onSubmit={registerUser}
-            />
+            /> */}
 
             <AllUsersList
               loading={loadingUsers}

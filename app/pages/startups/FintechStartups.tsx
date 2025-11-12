@@ -64,7 +64,8 @@ const FiniTechStartups: React.FC<Props> = ({ currentUser }) => {
   } = useGetPendingStartupsQuery(undefined, {
     skip: currentUser?.role !== "admin",
   });
-
+  console.log("user role:", currentUser?.role);
+  console.log("Startups data:===================", pendingStartups);
   const [addStartup, { isLoading: adding }] = useCreateStartupMutation();
   const [deleteStartup] = useDeleteStartupMutation();
   const [bulkUploadStartups] = useBulkUploadStartupsMutation();
