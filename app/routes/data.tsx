@@ -1,6 +1,6 @@
 import React from "react";
-import UserManagementPage from "~/pages/users/UserManagementPage";
+import DataManagementPage from "~/pages/data/DataManagement";
 
 export default function Data() {
-  return <UserManagementPage />;
+  return <DataManagementPage />;
 }
