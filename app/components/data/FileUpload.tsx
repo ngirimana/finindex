@@ -3,6 +3,10 @@ import { Upload, AlertCircle, CheckCircle, X, RefreshCw } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import type { CountryData } from "../../types";
+import {
+  useBulkUploadCountryDataMutation,
+  useLazyGetAllCountryDataQuery,
+} from "~/services/finApi";
 
 interface FileUploadProps {
   onDataUpdate: (data: CountryData[]) => void;
@@ -37,6 +41,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     type: "idle",
     message: "",
   });
+
+  const [bulkUploadCountryData] = useBulkUploadCountryDataMutation();
+  const [triggerGetAllCountryData] = useLazyGetAllCountryDataQuery();
 
   const validateData = (
     data: any[]
@@ -186,84 +193,80 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const handleParsedData = async (data: any[]) => {
     const validation = validateData(data);
-    const apiUrl = import.meta.env.VITE_API_URL || "/api";
 
-    if (validation.isValid) {
-      try {
-        const stored =
-          typeof window !== "undefined"
-            ? localStorage.getItem("fintechUser")
-            : null;
-        const user = stored ? JSON.parse(stored) : {};
-        const res = await fetch(`${apiUrl}/country-data/bulk`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: user?.token ? `Bearer ${user.token}` : "",
-          },
-          body: JSON.stringify({ data: validation.validData }),
-        });
-        if (!res.ok) {
-          const err = await res.json();
-          setUploadStatus({
-            type: "error",
-            message: err.error || "Failed to upload data to backend",
-            details: [
-              err.details || err.message || "Unknown error",
-              ...(err.conflicts
-                ? [
-                    `Conflicts: ${err.conflicts.map((c: any) => `${c.id} (${c.year})`).join(", ")}`,
-                  ]
-                : []),
-            ].filter(Boolean),
-          });
-          return;
-        }
-
-        const latestRes = await fetch(`${apiUrl}/country-data`);
-        const latestData = await latestRes.json();
-        onDataUpdate(latestData);
-
-        const totalCompanies = latestData.reduce(
-          (sum: number, country: any) =>
-            sum +
-            (country && typeof country.fintechCompanies === "number"
-              ? country.fintechCompanies
-              : 0),
-          0
-        );
-        const years = [
-          ...new Set(
-            latestData.map((country: any) =>
-              country && typeof country.year === "number" ? country.year : 0
-            )
-          ),
-        ].sort((a, b) =>
-          typeof b === "number" && typeof a === "number" ? b - a : 0
-        );
-
-        setUploadStatus({
-          type: "success",
-          message: `Successfully imported ${latestData.length} countries`,
-          details: [
-            `Dataset completely overwritten with new data`,
-            `Years included: ${years.join(", ")}`,
-            `Total fintech companies: ${totalCompanies}`,
-            `All previous data has been replaced`,
-          ],
-        });
-      } catch (error: any) {
-        setUploadStatus({
-          type: "error",
-          message: "Failed to upload or fetch data",
-          details: [error?.message || "Unknown error"],
-        });
-      }
-    } else {
+    if (!validation.isValid) {
       setUploadStatus({
         type: "error",
         message: "Data validation failed",
         details: validation.errors,
+      });
+      return;
+    }
+
+    try {
+      // Use RTK Query mutation for bulk upload
+      const uploadResult = await bulkUploadCountryData({
+        data: validation.validData,
+      }).unwrap();
+
+      //  Fetch latest data via RTK Query
+      const latestData = await triggerGetAllCountryData().unwrap();
+
+      onDataUpdate(latestData as CountryData[]);
+
+      const totalCompanies = (latestData as any[]).reduce(
+        (sum: number, country: any) =>
+          sum +
+          (country && typeof country.fintechCompanies === "number"
+            ? country.fintechCompanies
+            : 0),
+        0
+      );
+
+      const years = [
+        ...new Set(
+          (latestData as any[]).map((country: any) =>
+            country && typeof country.year === "number" ? country.year : 0
+          )
+        ),
+      ].sort((a, b) =>
+        typeof b === "number" && typeof a === "number" ? b - a : 0
+      );
+
+      setUploadStatus({
+        type: "success",
+        message: `Successfully imported ${(latestData as any[]).length} countries`,
+        details: [
+          `Dataset completely overwritten with new data`,
+          `Years included: ${years.join(", ")}`,
+          `Total fintech companies: ${totalCompanies}`,
+          `All previous data has been replaced`,
+        ],
+      });
+    } catch (err: any) {
+      const apiError = err?.data ?? err;
+      const msg =
+        apiError?.error ||
+        apiError?.message ||
+        "Failed to upload or fetch data";
+
+      const details: string[] = [];
+
+      if (apiError?.details) {
+        details.push(apiError.details);
+      }
+      if (Array.isArray(apiError?.conflicts)) {
+        details.push(
+          `Conflicts: ${apiError.conflicts
+            .map((c: any) => `${c.id} (${c.year})`)
+            .join(", ")}`
+        );
+      }
+
+      setUploadStatus({
+        type: "error",
+        message: msg,
+        details: details.length ? details : [msg],
       });
     }
   };
@@ -289,10 +292,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     e.preventDefault();
     setIsDragOver(true);
   };
+
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
   };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
@@ -350,9 +355,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       </div>
 
       <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-          isDragOver ? "" : ""
-        }`}
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer`}
         style={{
           borderColor: isDragOver ? COLORS.primaryMid : COLORS.border,
           backgroundColor: isDragOver ? COLORS.lightPanel : "#fff",

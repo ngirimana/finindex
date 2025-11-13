@@ -102,6 +102,8 @@ export const RegisterForm: React.FC<Props> = ({ onSuccessSwitchToLogin }) => {
         text: "Registration successful. Wait for admin verification.",
       });
 
+      localStorage.setItem("pendingUserEmail", email);
+
       // Redirect to login
       onSuccessSwitchToLogin();
     } catch (err: any) {

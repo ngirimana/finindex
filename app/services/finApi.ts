@@ -40,6 +40,15 @@ type RegisterRequest = {
   isVerified?: boolean;
 };
 type RegisterResponse = { message: string } | { success: boolean; message?: string };
+type VerifyEmailRequest = {
+  email: string;
+  otp: string;
+};
+
+type VerifyEmailResponse = {
+  success: boolean;
+  message?: string;
+};
 
 /* ----------------------- Startups Types (from component) ----------------------- */
 export type FintechStartup = {
@@ -114,8 +123,7 @@ type DeleteSummary = {
 };
 
 /* ----------------------- Config & Helpers ----------------------- */
-const BASE_URL =
-  "https://fintechindex-gfbebbdzhfbva0cb.switzerlandnorth-01.azurewebsites.net"; // Replace with your actual backend URL or use environment variables
+const BASE_URL =import.meta.env.VITE_API_URL ; 
 
 const isoA3toA2: Record<string, string> = {
   DZA: "DZ", AGO: "AO", BEN: "BJ", BWA: "BW", BFA: "BF", BDI: "BI", CMR: "CM", CPV: "CV",
@@ -198,6 +206,20 @@ export const finApi = createApi({
       providesTags: (_res, _err, year) => [{ type: "StartupCounts", id: `YEAR-${year}` }],
     }),
 
+        /* ---------- COUNTRY DATA (Bulk Upload) ---------- */
+    bulkUploadCountryData: build.mutation<any, { data: any[] }>({
+      query: (body) => ({
+        url: "country-data/bulk",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [
+        { type: "CountryData", id: "LIST" },
+        { type: "Years", id: "LIST" },
+      ],
+    }),
+
+
     /* ---------- STARTUPS ---------- */
     getStartups: build.query<
       FintechStartup[],
@@ -225,7 +247,7 @@ export const finApi = createApi({
       query: () => "startups/pending",
 
       transformResponse: (res: any) => {
-        console.log("Pending startups RAW API response:", res.length);  // <= HERE
+        
         return res;
       },
 
@@ -300,6 +322,19 @@ export const finApi = createApi({
     register: build.mutation<RegisterResponse, RegisterRequest>({
       query: (body) => ({ url: "auth/register", method: "POST", body }),
       invalidatesTags: [{ type: "Auth", id: "STATE" }],
+    }),
+
+    verifyEmail: build.mutation<VerifyEmailResponse, VerifyEmailRequest>({
+      query: (body) => ({
+        url: "auth/verify-email",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: [
+        { type: "Auth", id: "STATE" },
+        { type: "User", id: "ME" },
+        { type: "UnverifiedUsers", id: "LIST" },
+      ],
     }),
 
     me: build.query<any, void>({
@@ -414,7 +449,8 @@ export const {
   useGetCountryDataByYearQuery,
   useGetAvailableYearsQuery,
   useGetStartupCountsByYearQuery,
-
+  useBulkUploadCountryDataMutation,
+  useLazyGetAllCountryDataQuery,
   // Startups
   useGetStartupsQuery,
   useGetPendingStartupsQuery,
@@ -431,6 +467,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useMeQuery,
+  useVerifyEmailMutation,
 
   // Users (admin)
   useGetUsersQuery,

@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { ChevronUp, ChevronDown, Download, Building2 } from "lucide-react";
 import type { CountryData } from "../types";
+import {
+  useGetStartupCountsByYearQuery,
+  type StartupCount,
+} from "~/services/finApi";
 
 interface CountryTableProps {
   data: CountryData[];
@@ -13,50 +17,26 @@ export const CountryTable: React.FC<CountryTableProps> = ({
 }) => {
   const [sortField, setSortField] = useState<keyof CountryData>("finalScore");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [startupCounts, setStartupCounts] = useState<Map<string, number>>(
-    new Map()
-  );
 
-  // Fetch startup counts by country and year (same as map)
-  useEffect(() => {
-    if (!selectedYear) {
-      return;
-    }
+  const {
+    data: startupCountsData = [],
+    isLoading: startupCountsLoading,
+    isError: startupCountsError,
+  } = useGetStartupCountsByYearQuery(selectedYear as number, {
+    skip: !selectedYear,
+  });
 
-    const fetchStartupCounts = async () => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL || "/api";
-
-        const response = await fetch(
-          `${apiUrl}/startups/counts?year=${selectedYear}`
-        );
-        if (response.ok) {
-          const counts = await response.json();
-
-          const countsMap = new Map();
-          counts.forEach((item: { country: string; count: number }) => {
-            countsMap.set(item.country, item.count);
-          });
-
-          setStartupCounts(countsMap);
-        } else {
-          console.error(
-            "Table: Failed to fetch startup counts:",
-            response.status,
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Table: Error fetching startup counts:", error);
-      }
-    };
-
-    fetchStartupCounts();
-  }, [selectedYear]);
+  const startupCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    (startupCountsData as StartupCount[]).forEach((item) => {
+      map.set(item.country, item.count);
+    });
+    return map;
+  }, [startupCountsData]);
 
   const sortedData = [...data].sort((a, b) => {
-    const aValue = a[sortField] as number;
-    const bValue = b[sortField] as number;
+    const aValue = (a[sortField] as number) ?? 0;
+    const bValue = (b[sortField] as number) ?? 0;
     return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
   });
 
@@ -240,11 +220,8 @@ export const CountryTable: React.FC<CountryTableProps> = ({
                     <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 mr-1 sm:mr-2" />
                     {(() => {
                       const count = startupCounts.get(country.name);
-                      if (country.name === "Nigeria") {
-                        console.log(
-                          `Table Display: Nigeria - country.name: "${country.name}", startupCounts.get("${country.name}"): ${count}, startupCounts size: ${startupCounts.size}`
-                        );
-                      }
+                      if (startupCountsLoading) return "…";
+                      if (startupCountsError) return "N/A";
                       return count || 0;
                     })()}
                   </div>

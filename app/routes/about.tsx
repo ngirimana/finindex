@@ -23,29 +23,57 @@ export type TeamMember = {
 const sampleTeam: TeamMember[] = [
   {
     id: "1",
-    name: "Ishimwe K. Joy",
-    position: "Head of Engineering",
-    linkedin: "https://www.linkedin.com/in/ishimwe-joy",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    name: "Prof. Patrick McSharry",
+    position: "Professor at Carnegie Mellon University",
+    linkedin: "https://www.linkedin.com/in/mcsharry/",
+    image: "/images/patrick.jpeg",
   },
   {
     id: "2",
-    name: "Alain Derrick",
-    position: "Product Manager",
-    linkedin: "https://www.linkedin.com/in/alain-derrick",
-    image: "https://randomuser.me/api/portraits/men/75.jpg",
+    name: "Edith Luhanga, PhD",
+    position: "Assistant Research Professor at Carnegie Mellon University",
+    linkedin: "https://www.linkedin.com/in/edith-luhanga/",
+    image: "/images/Luhanga.jpeg",
   },
   {
     id: "3",
-    name: "Asha Mbabazi",
+    name: "Ganesh Mani,PhD",
     position: "Data Scientist",
-    image: "https://randomuser.me/api/portraits/women/70.jpg",
+    linkedin: "https://www.linkedin.com/in/ganeshmani/",
+    image: "/images/ganesh.jpeg",
   },
+
   {
     id: "4",
-    name: "Eric Niyonsenga",
-    position: "Software Engineer",
-    linkedin: "https://www.linkedin.com/in/eric-niyonsenga",
+    name: "Chimwemwe Chipeta, PhD",
+    position:
+      "Professor & Director: Wits Fintech Hub, University of the Witwatersrand",
+    linkedin: "https://www.linkedin.com/in/chimwemwe-chipeta-ph-d-ba480736/",
+    image: "/images/chipeta.jpeg",
+  },
+  {
+    id: "5",
+    name: "Karen Sowon, PhD",
+    position:
+      "Assitant Professor of Human Computer Interaction at Indiana University Bloomington ",
+    linkedin: "https://www.linkedin.com/in/karensowon/",
+    image: "/images/karen.jpeg",
+  },
+  {
+    id: "6",
+    name: "Yves Mfitumukiza Ndayisaba",
+    position:
+      "Graduate Research And Teaching Assistant at Cameron School of Business at UNC Wilmington ",
+    linkedin: "https://www.linkedin.com/in/yves-mfitumukiza-ndayisaba/",
+    image: "/images/yves.jpeg",
+  },
+
+  {
+    id: "7",
+    name: "Pierre Ntakirutimana",
+    position: "Research Associate at Carnegie Mellon University",
+    linkedin: "https://www.linkedin.com/in/pierre-ntakirutimana-b784ba186/",
+    image: "/images/pierre.jpeg",
   },
 ];
 
@@ -97,7 +125,7 @@ function AboutSummary() {
         </p>
 
         <p className="mt-4 italic" style={{ color: "#e6cbbf" }}>
-          Published at the ACM International Conference on AI in Finance (ICAIF
+          Presented at the ACM International Conference on AI in Finance (ICAIF
           2025) and representing a step forward in Africa’s digital finance
           research.
         </p>

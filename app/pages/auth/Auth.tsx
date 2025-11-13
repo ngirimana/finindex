@@ -30,8 +30,10 @@ export default function AuthPage() {
             {mode === "login" ? (
               <LoginForm onSuccess={() => navigate("/")} />
             ) : (
-              <RegisterForm onSuccessSwitchToLogin={() => setMode("login")} />
-              //  onSuccessSwitchToLogin={() => navigate("/otp-verify")}
+              // <RegisterForm onSuccessSwitchToLogin={() => setMode("login")} />
+              <RegisterForm
+                onSuccessSwitchToLogin={() => navigate("/otp-verify")}
+              />
             )}
           </div>
         </div>

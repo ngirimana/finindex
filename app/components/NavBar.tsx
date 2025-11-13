@@ -9,7 +9,7 @@ const BASE_NAV = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Financial News", href: "/news" },
-  { label: "Startups", href: "/startups" },
+  { label: "Fintech Companies", href: "/startups" },
 ];
 
 const ADMIN_NAV = [
@@ -74,12 +74,6 @@ export function SiteNavbar() {
 
           {isLoggedIn && (
             <div className="flex items-center gap-3 border-l border-[#8b4d2e] pl-3">
-              <div className="flex items-center gap-1 text-orange-200">
-                <UserIcon size={15} />
-                <span className="text-sm font-medium">
-                  Hello, {user?.name || "User"}
-                </span>
-              </div>
               <button
                 onClick={handleLogout}
                 className="text-sm font-medium flex items-center gap-1 text-white hover:text-orange-200 transition"
