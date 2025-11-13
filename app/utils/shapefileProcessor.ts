@@ -162,7 +162,7 @@ export const processShapefileData = async (shapefilePath: string): Promise<Proce
       features: features
     };
   } catch (error) {
-   
+    console.log(error)
     return {
       type: 'FeatureCollection',
       features: [] 
@@ -179,7 +179,7 @@ export const filterAfricanCountries = (features: ShapefileFeature[]): ShapefileF
     return AFRICAN_COUNTRIES.has(isoCode);
   });
   if (filtered.length !== features.length) {
-    return[]
+    console.warn('Some non-African features were present in the GeoJSON and have been filtered out.');
   }
   return filtered;
 };
