@@ -23,24 +23,24 @@ export type TeamMember = {
 const sampleTeam: TeamMember[] = [
   {
     id: "1",
-    name: "Prof. Patrick McSharry",
-    position: "Professor at Carnegie Mellon University",
-    linkedin: "https://www.linkedin.com/in/mcsharry/",
-    image: "/images/patrick.jpeg",
-  },
-  {
-    id: "2",
     name: "Edith Luhanga, PhD",
     position: "Assistant Research Professor at Carnegie Mellon University",
     linkedin: "https://www.linkedin.com/in/edith-luhanga/",
     image: "/images/Luhanga.jpeg",
   },
   {
-    id: "3",
+    id: "2",
     name: "Ganesh Mani,PhD",
     position: "Data Scientist",
     linkedin: "https://www.linkedin.com/in/ganeshmani/",
     image: "/images/ganesh.jpeg",
+  },
+  {
+    id: "3",
+    name: "Prof. Patrick McSharry",
+    position: "Professor at Carnegie Mellon University",
+    linkedin: "https://www.linkedin.com/in/mcsharry/",
+    image: "/images/patrick.jpeg",
   },
 
   {
