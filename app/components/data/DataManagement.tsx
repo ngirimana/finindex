@@ -346,36 +346,6 @@ export const DataManagement: React.FC<DataManagementProps> = ({
                     Selective Data Deletion
                   </h4>
 
-                  {/* Delete All (keep destructive red) */}
-                  <div className="mb-4">
-                    <button
-                      onClick={handleClearAllData}
-                      className="w-full text-left p-3 rounded-lg border transition-colors"
-                      style={{
-                        backgroundColor: "#FDECEC",
-                        borderColor: "#F2B8B5",
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div
-                            className="font-medium"
-                            style={{ color: "#7F1D1D" }}
-                          >
-                            Delete All Data
-                          </div>
-                          <div className="text-xs" style={{ color: "#B91C1C" }}>
-                            Remove all stored data completely
-                          </div>
-                        </div>
-                        <AlertTriangle
-                          className="w-4 h-4"
-                          style={{ color: "#DC2626" }}
-                        />
-                      </div>
-                    </button>
-                  </div>
-
                   {/* Delete by Year */}
                   <div className="mb-4">
                     <label
@@ -643,30 +613,6 @@ export const DataManagement: React.FC<DataManagementProps> = ({
             </p>
           </div>
         )}
-
-        <div
-          className="mt-4 p-4 rounded-lg"
-          style={{ backgroundColor: COLORS.primaryLight }}
-        >
-          <h4
-            className="text-sm font-medium mb-2"
-            style={{ color: COLORS.primaryDark }}
-          >
-            Data Persistence Info:
-          </h4>
-          <div
-            className="text-xs space-y-1"
-            style={{ color: COLORS.textMuted }}
-          >
-            <p>• Data is stored in the backend</p>
-            <p>• Only authenticated admins/editors can modify data</p>
-            <p>• All data changes are tracked with timestamps and user info</p>
-            <p>
-              • Selective deletion allows removing specific years, countries, or
-              records
-            </p>
-          </div>
-        </div>
       </div>
     </>
   );
