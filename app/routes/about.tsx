@@ -44,7 +44,7 @@ const sampleTeam: TeamMember[] = [
   },
   {
     id: "3",
-    name: "Prof. Patrick McSharry",
+    name: "Patrick McSharry, PhD",
     position: "Head of Catastrophe Risk Financing at University of Oxford ",
     linkedin: "https://www.linkedin.com/in/mcsharry/",
     image: "/images/patrick.jpeg",
