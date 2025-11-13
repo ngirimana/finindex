@@ -37,14 +37,15 @@ const sampleTeam: TeamMember[] = [
   {
     id: "2",
     name: "Ganesh Mani,PhD",
-    position: "Data Scientist",
+    position:
+      "AI Entrepreneur & Investor | Faculty at Carnegie Mellon | ex-President, TiE Pittsburgh | ex-SSgA | UWisc-Madison PhD (CS / AI); MBA (Finance) | IIT-Bombay CS",
     linkedin: "https://www.linkedin.com/in/ganeshmani/",
     image: "/images/ganesh.jpeg",
   },
   {
     id: "3",
     name: "Prof. Patrick McSharry",
-    position: "Professor at Carnegie Mellon University",
+    position: "Head of Catastrophe Risk Financing at University of Oxford ",
     linkedin: "https://www.linkedin.com/in/mcsharry/",
     image: "/images/patrick.jpeg",
   },
