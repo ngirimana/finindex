@@ -37,8 +37,7 @@ const sampleTeam: TeamMember[] = [
   {
     id: "2",
     name: "Ganesh Mani,PhD",
-    position:
-      "AI Entrepreneur & Investor | Faculty at Carnegie Mellon | ex-President, TiE Pittsburgh | ex-SSgA | UWisc-Madison PhD (CS / AI); MBA (Finance) | IIT-Bombay CS",
+    position: "AI Entrepreneur & Investor and  Faculty at Carnegie Mellon ",
     linkedin: "https://www.linkedin.com/in/ganeshmani/",
     image: "/images/ganesh.jpeg",
   },
