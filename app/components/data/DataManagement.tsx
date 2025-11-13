@@ -49,6 +49,9 @@ export const DataManagement: React.FC<DataManagementProps> = ({
   const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? 2024);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
+  const stored =
+    typeof window !== "undefined" ? localStorage.getItem("fintechUser") : null;
+  const user = stored ? JSON.parse(stored) : null;
 
   const [deleteAll, { isLoading: deletingAll }] =
     useDeleteAllCountryDataMutation();
@@ -69,7 +72,7 @@ export const DataManagement: React.FC<DataManagementProps> = ({
       recordCount: data.length,
       years: yrs,
       lastUpdated: new Date(),
-      updatedBy: "Database",
+      updatedBy: user?.name ?? "Unknown",
     };
   }, [data, years]);
 

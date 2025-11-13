@@ -10,6 +10,7 @@ const BASE_NAV = [
   { label: "About", href: "/about" },
   { label: "Financial News", href: "/news" },
   { label: "Fintech Companies", href: "/startups" },
+  { label: "FinDistress AI", href: "/findistress-ai" },
 ];
 
 const ADMIN_NAV = [

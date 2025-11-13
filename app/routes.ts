@@ -8,4 +8,5 @@ export default [index("routes/home.tsx"),
     route("/user-management", "routes/users.tsx"),
     route("/data-management", "routes/data.tsx"),
     route("/otp-verify", "pages/otp/VerifyOtp.tsx"),
+    route("/findistress-ai", "routes/ai.tsx"),
 ] satisfies RouteConfig;
