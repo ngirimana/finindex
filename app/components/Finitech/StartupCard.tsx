@@ -13,6 +13,9 @@ type Props = {
 const StartupCard: React.FC<Props> = ({ startup, canDelete, onDelete }) => {
   const sectors = parseSectors(startup.sector as any);
   const id = String(startup.id || (startup as any)._id);
+  const stored =
+    typeof window !== "undefined" ? localStorage.getItem("fintechUser") : null;
+  const user = stored ? JSON.parse(stored) : null;
 
   return (
     <div className="startup-card border border-gray-200 rounded-lg p-4 sm:p-5 hover:shadow-lg transition-all bg-white flex flex-col">
@@ -84,7 +87,7 @@ const StartupCard: React.FC<Props> = ({ startup, canDelete, onDelete }) => {
               <div className="flex-1 h-10" />
             )}
 
-            {canDelete && (
+            {canDelete && user && user.role === "admin" && (
               <button
                 onClick={() => onDelete(id)}
                 className={`px-3 py-3 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 flex items-center justify-center gap-2 ${startup.website ? "flex-1" : "w-full"}`}
