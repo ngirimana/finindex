@@ -390,7 +390,7 @@ export const DataManagement: React.FC<DataManagementProps> = ({
                         onChange={(e) =>
                           setSelectedYear(Number(e.target.value))
                         }
-                        className="flex-1 px-3 py-2 rounded-lg border text-sm"
+                        className="flex-1 px-3 py-2 rounded-lg border text-sm text-black"
                         style={{ borderColor: COLORS.border }}
                       >
                         {availableYears.map((year) => (
@@ -422,7 +422,7 @@ export const DataManagement: React.FC<DataManagementProps> = ({
                     <select
                       value={selectedCountry}
                       onChange={(e) => setSelectedCountry(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-lg border text-sm"
+                      className="flex-1 px-3 py-2 rounded-lg border text-sm text-black"
                       style={{ borderColor: COLORS.border }}
                     >
                       <option value="">Select Country</option>
