@@ -19,8 +19,14 @@ export type TeamMember = {
   image?: string;
 };
 
-/** ------ Sample team (replace with your data) ------ */
 const sampleTeam: TeamMember[] = [
+  {
+    id: "0",
+    name: "Pierre Ntakirutimana",
+    position: "Research Associate at Carnegie Mellon University",
+    linkedin: "https://www.linkedin.com/in/pierre-ntakirutimana-b784ba186/",
+    image: "/images/pierre.jpeg",
+  },
   {
     id: "1",
     name: "Edith Luhanga, PhD",
@@ -66,14 +72,6 @@ const sampleTeam: TeamMember[] = [
       "Graduate Research And Teaching Assistant at Cameron School of Business at UNC Wilmington ",
     linkedin: "https://www.linkedin.com/in/yves-mfitumukiza-ndayisaba/",
     image: "/images/yves.jpeg",
-  },
-
-  {
-    id: "7",
-    name: "Pierre Ntakirutimana",
-    position: "Research Associate at Carnegie Mellon University",
-    linkedin: "https://www.linkedin.com/in/pierre-ntakirutimana-b784ba186/",
-    image: "/images/pierre.jpeg",
   },
 ];
 
